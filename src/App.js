@@ -1,3 +1,4 @@
+import { Table, Form, Button, Alert, Navbar, Nav } from 'react-bootstrap';
 import  React, { useState } from 'react';
 import {
   BrowserRouter as Router,
@@ -37,12 +38,22 @@ const Notes = ({ notes }) => {
   return (
     <div>
       <h2>Notes</h2>
-      <ul>
-        {notes.map(note =>
-          <li key={note.id}>
-            <Link to={`/notes/${note.id}`}>{note.content}</Link>
-          </li>)}
-      </ul>
+      <Table striped>
+        <tbody>
+          {notes.map(note =>
+            <tr key={note.id}>
+              <td>
+                <Link to={`notes/${note.id}`}>
+                  {note.content}
+                </Link>
+              </td>
+              <td>
+                {note.user}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
     </div>
   );
 };
@@ -75,15 +86,26 @@ const Login = (props) => {
   return (
     <div>
       <h2>login</h2>
-      <form onSubmit={onSubmit}>
-        <div>
-          username: <input />
-        </div>
-        <div>
-          password: <input type='password' />
-        </div>
-        <button type='submit'>Log In</button>
-      </form>
+      <Form onSubmit={onSubmit}>
+        <Form.Group>
+          <Form.Label>
+            username:
+          </Form.Label>
+          <Form.Control
+            type="text"
+            name="username"
+          />
+          <Form.Label>
+            password:
+          </Form.Label>
+          <Form.Control
+            type="password"
+          />
+          <Button variant="primary" type="submit">
+            login
+          </Button>
+        </Form.Group>
+      </Form>
     </div>
   );
 };
@@ -114,25 +136,47 @@ const App = () => {
   ]);
 
   const [ user, setUser ]  = useState(null);
+  const [ message, setMessage ] = useState(null);
 
   const login = (user) => {
     setUser(user);
+    setMessage(`welcome ${user}`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
   const padding = { padding:5 };
 
   return (
-    <div>
+    <div  className="container">
+      {(message &&
+        <Alert variant='success'>
+          {message}
+        </Alert>)}
       <Router>
-        <div>
-          <Link style={padding} to='/'>Home</Link>
-          <Link style={padding} to='/notes'>Notes</Link>
-          <Link style={padding} to='/users'>Users</Link>
-          {user ?
-            <em>{user} logged in</em>
-            : <Link style={padding} to='/login'>login</Link>
-          }
-        </div>
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to='/'>Home</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to='/notes'>Notes</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                <Link style={padding} to='/users'>Users</Link>
+              </Nav.Link>
+              <Nav.Link href="#" as="span">
+                {user ?
+                  <em>{user} logged in</em>
+                  : <Link style={padding} to='/login'>login</Link>
+                }
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
 
         <Switch>
           <Route path='/notes/:id'>
