@@ -9,6 +9,23 @@ import {
   useHistory
 } from 'react-router-dom';
 
+import {
+  TableContainer,
+  Table,
+  Paper,
+  Container,
+  TableBody,
+  TableRow,
+  TableCell,
+  TextField,
+  Button,
+  AppBar,
+  Toolbar,
+  IconButton
+} from '@material-ui/core';
+
+import { Alert } from '@material-ui/lab';
+
 
 const Home = () => {
   return (
@@ -37,12 +54,22 @@ const Notes = ({ notes }) => {
   return (
     <div>
       <h2>Notes</h2>
-      <ul>
-        {notes.map(note =>
-          <li key={note.id}>
-            <Link to={`/notes/${note.id}`}>{note.content}</Link>
-          </li>)}
-      </ul>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {notes.map(note => (
+              <TableRow key={note.id}>
+                <TableCell>
+                  <Link to={`/notes/${note.id}`}>{note.content}</Link>
+                </TableCell>
+                <TableCell>
+                  {note.user}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };
@@ -77,12 +104,16 @@ const Login = (props) => {
       <h2>login</h2>
       <form onSubmit={onSubmit}>
         <div>
-          username: <input />
+          <TextField label="username" />
         </div>
         <div>
-          password: <input type='password' />
+          <TextField label="password" type='password' />
         </div>
-        <button type='submit'>Log In</button>
+        <div>
+          <Button variant='contained' color='primary' type='submit'>
+            Log in
+          </Button>
+        </div>
       </form>
     </div>
   );
@@ -114,49 +145,75 @@ const App = () => {
   ]);
 
   const [ user, setUser ]  = useState(null);
+  const [ message, setMessage ] = useState(null);
 
   const login = (user) => {
     setUser(user);
+    setMessage(`Welcom ${user}`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 5000);
   };
 
-  const padding = { padding:5 };
+  //const padding = { padding:5 };
 
   return (
-    <div>
-      <Router>
-        <div>
-          <Link style={padding} to='/'>Home</Link>
-          <Link style={padding} to='/notes'>Notes</Link>
-          <Link style={padding} to='/users'>Users</Link>
-          {user ?
-            <em>{user} logged in</em>
-            : <Link style={padding} to='/login'>login</Link>
-          }
-        </div>
-
-        <Switch>
-          <Route path='/notes/:id'>
-            <Note notes={notes} />
-          </Route>
-          <Route path='/notes'>
-            <Notes notes={notes}/>
-          </Route>
-          <Route path='/users'>
-            {user ? <Users /> : <Redirect to='/login' />}
-          </Route>
-          <Route path='/login'>
-            <Login onLogin={login} />
-          </Route>
-          <Route path='/'>
-            <Home />
-          </Route>
-        </Switch>
-      </Router>
+    <Container>
       <div>
-        <br/>
-        <em>Prepared By Kazi Shoaib Muhammad</em>
+        {(message &&
+          <Alert severity='success'>
+            {message}
+          </Alert>)}
       </div>
-    </div>
+      <div>
+        <Router>
+          <div>
+            <AppBar position = 'static'>
+              <Toolbar>
+                <IconButton edge='start' color='inherit' aria-label='menu'>
+                </IconButton>
+                <Button color='inherit' component={Link} to='/'>
+                  Home
+                </Button>
+                <Button color='inherit' component={Link} to='/notes'>
+                  Notes
+                </Button>
+                <Button color='inherit' component={Link} to='/users'>
+                  Users
+                </Button>
+                {user ?
+                  <em>{user} logged in</em> :
+                  <Button color='inherit' component={Link} to='/login'>
+                      Log in
+                  </Button>
+                }
+              </Toolbar>
+            </AppBar>
+          </div>
+          <Switch>
+            <Route path='/notes/:id'>
+              <Note notes={notes} />
+            </Route>
+            <Route path='/notes'>
+              <Notes notes={notes}/>
+            </Route>
+            <Route path='/users'>
+              {user ? <Users /> : <Redirect to='/login' />}
+            </Route>
+            <Route path='/login'>
+              <Login onLogin={login} />
+            </Route>
+            <Route path='/'>
+              <Home />
+            </Route>
+          </Switch>
+        </Router>
+        <div>
+          <br/>
+          <em>Prepared By Kazi Shoaib Muhammad</em>
+        </div>
+      </div>
+    </Container>
   );
 
 
